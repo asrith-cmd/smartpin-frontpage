@@ -1,10 +1,10 @@
 import svgPaths from "./svg-9vqd4vh0vj";
-import imgChatGptImageJun292026044512Pm1 from "./ec6dc07ecdf83e63c880dcc764d6eadd357e0498.png";
-import imgComp1000081 from "./d6cb5124d85810eeef24e207bccdea33ff688bc6.png";
-import imgComp1000571 from "./e06d63abbaf41faa9770fc2f7c5a69b67e850581.png";
-import imgPlaceholder1 from "./71a9459c05c9ed41cee73bfb3c7610ab52c0d626.png";
-import imgBlue from "./f035ac52ccd7a4a9c36651b6710f77e7ee8b714e.png";
-import imgChatGptImageJun302026040144Pm1 from "./d23cc46f032a134e33a8098b0c7704de44785f28.png";
+import imgChatGptImageJun292026044512Pm1 from "@/assets/ec6dc07ecdf83e63c880dcc764d6eadd357e0498.png";
+import imgComp1000081 from "@/assets/d6cb5124d85810eeef24e207bccdea33ff688bc6.png";
+import imgComp1000571 from "@/assets/e06d63abbaf41faa9770fc2f7c5a69b67e850581.png";
+import imgPlaceholder1 from "@/assets/71a9459c05c9ed41cee73bfb3c7610ab52c0d626.png";
+import imgBlue from "@/assets/f035ac52ccd7a4a9c36651b6710f77e7ee8b714e.png";
+import imgChatGptImageJun302026040144Pm1 from "@/assets/d23cc46f032a134e33a8098b0c7704de44785f28.png";
 import { imgPlaceholder } from "./svg-os2gc";
 
 function Group1() {
@@ -434,7 +434,7 @@ function Footer() {
       <div className="absolute bottom-[-10.72px] h-[4.762px] left-0 right-[1.19px]">
         <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 175.022 4.7625">
           <foreignObject height="53.5781" width="223.838" x="-24.4078" y="-24.4078">
-            <div style={{ backdropFilter: "blur(12.2px)", clipPath: "url(#bgblur_0_2_350_clip_path)", height: "100%", width: "100%" }} xmlns="http://www.w3.org/1999/xhtml" />
+            <div style={{ backdropFilter: "blur(12.2px)", clipPath: "url(#bgblur_0_2_350_clip_path)", height: "100%", width: "100%" }} />
           </foreignObject>
           <g id="Rectangle 8" data-figma-bg-blur-radius="24.4078">
             <path d={svgPaths.p1f250380} fill="var(--fill-0, black)" fillOpacity="0.44" />
@@ -450,7 +450,7 @@ function Footer() {
       <div className="absolute bottom-[-15.48px] h-[4.762px] left-[7.14px] right-[8.33px]">
         <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 160.734 4.7625">
           <foreignObject height="53.5781" width="209.55" x="-24.4078" y="-24.4078">
-            <div style={{ backdropFilter: "blur(12.2px)", clipPath: "url(#bgblur_0_2_311_clip_path)", height: "100%", width: "100%" }} xmlns="http://www.w3.org/1999/xhtml" />
+            <div style={{ backdropFilter: "blur(12.2px)", clipPath: "url(#bgblur_0_2_311_clip_path)", height: "100%", width: "100%" }} />
           </foreignObject>
           <g id="Rectangle 9" data-figma-bg-blur-radius="24.4078">
             <path d={svgPaths.p1f3c4000} fill="var(--fill-0, black)" fillOpacity="0.3" />

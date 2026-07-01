@@ -1,4 +1,4 @@
-import heroBg from "figma:asset/ec6dc07ecdf83e63c880dcc764d6eadd357e0498.png";
+import heroBg from "@/assets/hero.png";
 
 const sfPro = "-apple-system, BlinkMacSystemFont, 'SF Pro', 'SF Pro Rounded', 'Helvetica Neue', sans-serif";
 const dmSans = "'DM Sans', sans-serif";
@@ -15,7 +15,7 @@ export function HeroSection() {
           aria-hidden
         />
         {/* Left gradient fade */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#161617] from-30% via-[#161617]/80 via-50% to-transparent" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(270deg, rgba(22, 22, 23, 0) 0%, #161617 1000%)" }} />
         {/* Bottom fade */}
         <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#161617] to-transparent" />
         {/* Top-left darkening */}
@@ -85,13 +85,7 @@ export function HeroSection() {
         </p>
       </div>
 
-      {/* Decorative concentric ellipses (bottom-right) */}
-      <div className="absolute bottom-0 right-[-100px] w-[600px] h-[400px] pointer-events-none opacity-30">
-        <div className="absolute inset-0 rounded-full border border-[#262626]" style={{ transform: "scaleX(2.5)" }} />
-        <div className="absolute inset-[15%] rounded-full border border-[#353535]" style={{ transform: "scaleX(2.5)" }} />
-        <div className="absolute inset-[28%] rounded-full border border-[#3A3A3A]" style={{ transform: "scaleX(2.5)" }} />
-        <div className="absolute inset-[40%] rounded-full border border-[#626262]" style={{ transform: "scaleX(2.5)" }} />
-      </div>
+
     </section>
   );
 }

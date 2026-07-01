@@ -12,7 +12,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#161617]/80 backdrop-blur-md border-b border-white/[0.06]">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${open ? "bg-[#161617]" : "bg-transparent"}`} style={{ background: open ? undefined : undefined }} ref={(el) => { if (el) { const handleScroll = () => { if (window.scrollY > 10) { el.style.background = "linear-gradient(to bottom, rgba(22,22,23,0.92) 0%, rgba(22,22,23,0.0) 100%)"; } else { el.style.background = "transparent"; } }; window.addEventListener("scroll", handleScroll, { passive: true }); handleScroll(); } }}>
       <div className="max-w-[1440px] mx-auto px-5 md:px-20 h-[68px] md:h-[85px] flex items-center justify-between gap-8">
         {/* Logo */}
         <SmartPinLogoSmall />

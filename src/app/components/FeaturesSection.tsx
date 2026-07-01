@@ -1,148 +1,306 @@
-import device2Img from "figma:asset/e06d63abbaf41faa9770fc2f7c5a69b67e850581.png";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollRevealText } from "./ScrollRevealText";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const sfPro = "-apple-system, BlinkMacSystemFont, 'SF Pro', 'SF Pro Rounded', 'Helvetica Neue', sans-serif";
 const dmSans = "'DM Sans', sans-serif";
 
-const featureCards = [
+const FRAME_COUNT = 240;
+const FRAME_WIDTH = 1920;
+const FRAME_HEIGHT = 1080;
+const frameUrl = (i: number) => `/seq/features/Comp_${String(i).padStart(5, "0")}.png`;
+
+const parts = [
   {
     title: "Front Enclosure",
     desc: "Designed to be lightweight, durable, and comfortable enough to wear every day without compromise.",
-    sub: "Aerospace-grade polymer shell rated IP67 for water and dust resistance.",
   },
   {
-    title: "BLE Connectivity",
-    desc: "Ultra-low-power Bluetooth communicates with school readers up to 30 meters away.",
-    sub: "No charging required for up to 2 years of daily operation.",
+    title: "RFID Module",
+    desc: "Secure RFID technology enables fast, contactless check-ins in less than a second.",
   },
   {
-    title: "Secure Chip",
-    desc: "Military-grade encryption ensures each Smart Pin ID is tamper-proof and unique.",
-    sub: "Zero personal data stored on device — all processing is server-side.",
+    title: "GPS Module",
+    desc: "Real-time location updates help schools and parents stay connected with confidence.",
   },
   {
-    title: "Geo-Precision",
-    desc: "Pinpoint arrival and departure with lane-level accuracy inside school boundaries.",
-    sub: "Custom safe-zone radius configurable per campus.",
+    title: "PCB",
+    desc: "A custom-engineered circuit board seamlessly powers every sensor, connection, and interaction.",
+  },
+  {
+    title: "Cellular Communication Module",
+    desc: "Independent cellular connectivity keeps Smart Pin communicating, even when Wi-Fi isn't available.",
   },
 ];
 
+// Frame where the parts are fully dispersed — the sequence pauses here.
+const FREEZE_FRAME = 120;
+
+// Scroll-progress phases within the pin:
+// 0 -> DISPERSE_END        : scrub frames 0 -> FREEZE_FRAME (parts fly apart)
+// DISPERSE_END -> CAPTION_END : frame held at FREEZE_FRAME, captions cycle one per equal segment
+// CAPTION_END -> 1            : scrub frames FREEZE_FRAME -> last (parts close back up), then release
+const DISPERSE_END = 0.3;
+const CAPTION_END = 0.75;
+
+function progressToFrame(progress: number) {
+  if (progress <= DISPERSE_END) {
+    const t = progress / DISPERSE_END;
+    return Math.round(t * FREEZE_FRAME);
+  }
+  if (progress <= CAPTION_END) {
+    return FREEZE_FRAME;
+  }
+  const t = (progress - CAPTION_END) / (1 - CAPTION_END);
+  return Math.round(FREEZE_FRAME + t * (FRAME_COUNT - 1 - FREEZE_FRAME));
+}
+
+function progressToPart(progress: number) {
+  if (progress <= DISPERSE_END || progress > CAPTION_END) return -1;
+  const t = (progress - DISPERSE_END) / (CAPTION_END - DISPERSE_END);
+  return Math.min(parts.length - 1, Math.floor(t * parts.length));
+}
+
 export function FeaturesSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const captionRef = useRef<HTMLDivElement>(null);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
+  const frameRef = useRef(0);
+  const [activePart, setActivePart] = useState(0);
+  const [captionVisible, setCaptionVisible] = useState(false);
+
+  const drawFrame = (index: number) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const imgs = imagesRef.current;
+    let i = index;
+    while (i > 0 && !(imgs[i] && imgs[i].complete && imgs[i].naturalWidth)) i--;
+    const img = imgs[i];
+    if (!img || !img.complete || !img.naturalWidth) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (!w || !h) return;
+    if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const scale = Math.min(w / FRAME_WIDTH, h / FRAME_HEIGHT);
+    const dw = FRAME_WIDTH * scale;
+    const dh = FRAME_HEIGHT * scale;
+    ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  };
+
+  // Preload the exploded-parts image sequence
+  useEffect(() => {
+    const imgs: HTMLImageElement[] = [];
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = frameUrl(i);
+      imgs.push(img);
+    }
+    imagesRef.current = imgs;
+    imgs[0].onload = () => drawFrame(0);
+  }, []);
+
+  // Pinned scroll-scrub + sequential part-caption reveal
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: () => `+=${Math.round(window.innerHeight * 3.6)}`,
+        pin: true,
+        scrub: 0.6,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const frame = progressToFrame(self.progress);
+          frameRef.current = frame;
+          drawFrame(frame);
+
+          const partIndex = progressToPart(self.progress);
+          setCaptionVisible((prev) => (prev !== (partIndex !== -1) ? partIndex !== -1 : prev));
+          if (partIndex !== -1) {
+            setActivePart((prev) => (prev !== partIndex ? partIndex : prev));
+          }
+        },
+      });
+
+      const onResize = () => drawFrame(frameRef.current);
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Fade the caption in/out, and re-pop it whenever the active part changes
+  useEffect(() => {
+    if (!captionRef.current) return;
+    if (captionVisible) {
+      gsap.fromTo(
+        captionRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+      );
+    } else {
+      gsap.to(captionRef.current, { opacity: 0, y: 12, duration: 0.3, ease: "power2.in" });
+    }
+  }, [activePart, captionVisible]);
+
+  const current = parts[activePart];
+
   return (
-    <section id="features" className="relative bg-[#161617] py-20 md:py-32 overflow-hidden">
-      {/* Decorative glowing line (right side) */}
+    <section
+      id="features"
+      ref={sectionRef}
+      className="relative bg-black pt-5 md:pt-3 pb-6 md:pb-10 overflow-hidden h-screen flex items-center"
+    >
+      {/* Background gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "linear-gradient(180deg, rgba(0, 35, 98, 0) 0%, rgba(0, 35, 98, 0.2) 70%, rgba(0, 35, 98, 0.2) 100%)" }}
+      />
+
+      {/* Vector 3 — upper-left diagonal glow */}
       <div
         className="absolute pointer-events-none"
         style={{
-          right: "-30%",
-          top: "0%",
-          width: "80%",
-          height: "100%",
-          background:
-            "linear-gradient(to right, #161617, rgba(5,79,213,0.35), #161617)",
-          transform: "rotate(15deg)",
-          filter: "blur(50px)",
-          opacity: 0.5,
+          width: "76.67vw",
+          height: "18.51vw",
+          top: "-5%",
+          left: "-40%",
+          transform: "rotate(10deg)",
+          opacity: 1,
         }}
-      />
+      >
+        <svg width="100%" height="100%" viewBox="0 0 1139.01 301.652" fill="none" preserveAspectRatio="none">
+          <path
+            d="M17.5048 155.208C46.0097 165.28 94.8659 208.457 166.808 235.246C238.75 262.035 288.126 280.827 343.951 282.978C399.777 285.128 459.226 270.269 513.926 228.255C568.626 186.24 647.415 112.229 702.034 70.6812C756.653 29.1333 793.033 24.5468 818.407 19.9219C844.113 15.2368 874.788 16.9046 910.748 28.8666C946.708 40.8286 978.917 64.7525 1008.93 99.4299C1038.95 134.107 1065.79 178.813 1085.48 215.117C1105.17 251.42 1116.89 277.965 1121.5 284.151"
+            stroke="url(#v3grad)"
+            strokeLinecap="round"
+            strokeWidth="35"
+          />
+          <defs>
+            <linearGradient id="v3grad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+              <stop offset="0%" stopColor="#161617" />
+              <stop offset="50%" stopColor="#054FD5" />
+              <stop offset="100%" stopColor="rgba(0, 35, 98, 0)" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
 
-      {/* Subtle blue top gradient */}
+      {/* Vector 4 — lower-right diagonal glow */}
       <div
-        className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none"
+        className="absolute pointer-events-none"
         style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,35,98,0.12), transparent)",
+          width: "76.67vw",
+          height: "14.69vw",
+          bottom: "-5%",
+          right: "-35%",
+          transform: "rotate(20deg)",
+          opacity: 1,
         }}
-      />
+      >
+        <svg width="100%" height="100%" viewBox="0 0 1139 246.486" fill="none" preserveAspectRatio="none">
+          <path
+            d="M17.5038 126.719C45.0848 140.551 94.4975 165.768 166.807 190.199C237.434 214.062 288.125 226.35 343.95 228.056C399.776 229.762 459.225 217.977 513.925 184.654C568.625 151.332 647.415 92.6316 702.033 59.679C756.652 26.7264 793.032 23.0888 818.406 19.4207C844.112 15.7048 874.787 17.0276 910.747 26.5149C946.707 36.0022 978.917 54.9768 1008.93 82.4803C1038.94 109.984 1065.79 145.441 1085.48 174.234C1105.17 203.027 1116.89 224.08 1121.5 228.986"
+            stroke="url(#v4grad)"
+            strokeLinecap="round"
+            strokeWidth="35"
+          />
+          <defs>
+            <linearGradient id="v4grad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+              <stop offset="0%" stopColor="rgba(0, 35, 98, 0)" />
+              <stop offset="50%" stopColor="#054FD5" />
+              <stop offset="100%" stopColor="#14171F" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20">
-        {/* Section header */}
-        <div className="text-center mb-16 md:mb-24">
-          <p
-            className="text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-6"
-            style={{ fontFamily: sfPro }}
-          >
-            Engineered with purpose
-          </p>
+      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 w-full">
+        {/* Section header (scroll-reveal, word by word) */}
+        <div className="text-center mb-4 md:mb-6">
+          <ScrollRevealText
+            text="Engineered with purpose"
+            className="block text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-6"
+            revealBy="words"
+            startPercent={88}
+            endPercent={58}
+            dimOpacity={0.18}
+          />
           <h2
-            className="text-[#E8E8EF] text-4xl md:text-[70px] leading-[1.1] font-medium"
+            className="text-[#E8E8EF] text-7xl md:text-5xl leading-[1.1] font-medium"
             style={{ fontFamily: sfPro }}
           >
-            Precision.
-            <br />
-            Inside and out.
+            <ScrollRevealText
+              text="Precision."
+              className="block"
+              revealBy="words"
+              startPercent={82}
+              endPercent={50}
+              dimOpacity={0.18}
+            />
+            <ScrollRevealText
+              text="Inside and out."
+              className="block"
+              revealBy="words"
+              startPercent={78}
+              endPercent={42}
+              dimOpacity={0.18}
+            />
           </h2>
         </div>
 
-        {/* Two-column layout: device image + feature details */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          {/* Device image */}
-          <div className="shrink-0 flex justify-center">
-            <img
-              src={device2Img}
-              alt="Smart Pin devices arranged"
-              className="h-[280px] md:h-[440px] object-contain"
-              style={{ filter: "drop-shadow(0 16px 48px rgba(5,79,213,0.2))" }}
-            />
-          </div>
-
-          {/* Right: detail + cards */}
-          <div className="flex-1 w-full">
-            {/* Detail point with line */}
-            <div className="flex gap-6 mb-10 items-start">
-              <div className="flex flex-col items-center shrink-0">
-                <div className="w-[6px] h-[6px] rounded-full bg-[#E8E8EF] mt-1" />
-                <div
-                  className="w-px flex-1 mt-2 min-h-[60px]"
-                  style={{ background: "linear-gradient(to bottom, #E8E8EF, transparent)" }}
-                />
-              </div>
-              <div>
-                <h3
-                  className="text-[#E8E8EF] text-xl font-normal mb-2"
-                  style={{ fontFamily: sfPro }}
-                >
-                  Front Enclosure
-                </h3>
-                <p
-                  className="text-[#858589] text-lg leading-relaxed max-w-[340px]"
-                  style={{ fontFamily: dmSans }}
-                >
-                  Designed to be lightweight, durable, and comfortable enough to wear every day without compromise.
-                </p>
-              </div>
+        {/* Center: scroll-scrubbed exploded-parts sequence — height-bound so it always fits the viewport */}
+        <div className="flex justify-center">
+          <div className="relative w-auto max-w-[90vw]">
+            <div className="aspect-video h-[40vh] sm:h-[46vh] md:h-[52vh]">
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full"
+                
+              />
             </div>
 
-            {/* Feature cards grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {featureCards.map((f, i) => (
-                <div
-                  key={i}
-                  className="p-5 md:p-6 rounded-[16px] border border-white/[0.08] flex flex-col gap-3"
-                  style={{
-                    background: "rgba(255,255,255,0.03)",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
-                  }}
+            {/* Rotating part caption, anchored under the leftmost part with a dot + line */}
+            <div className="mt-1 pl-[4%] md:pl-[6%]">
+              <div
+                ref={captionRef}
+                className="flex flex-col items-start text-left max-w-[300px]"
+                style={{ opacity: 0, transform: "translateY(12px)" }}
+              >
+                <span className="w-[6px] h-[6px] rounded-full bg-[#E8E8EF] shrink-0" />
+                <span
+                  className="w-px h-5 md:h-7"
+                  style={{ background: "linear-gradient(to bottom, #E8E8EF, transparent)" }}
+                />
+                <h3
+                  className="text-[#E8E8EF] text-lg md:text-xl font-normal mb-1"
+                  style={{ fontFamily: sfPro }}
                 >
-                  <h4
-                    className="text-[#E8E8EF] text-base font-medium"
-                    style={{ fontFamily: sfPro }}
-                  >
-                    {f.title}
-                  </h4>
-                  <p
-                    className="text-[#858589] text-sm leading-relaxed"
-                    style={{ fontFamily: dmSans }}
-                  >
-                    {f.desc}
-                  </p>
-                  <p
-                    className="text-[#858589]/60 text-xs leading-relaxed"
-                    style={{ fontFamily: dmSans }}
-                  >
-                    {f.sub}
-                  </p>
-                </div>
-              ))}
+                  {current.title}
+                </h3>
+                <p
+                  className="text-[#858589] text-sm md:text-base leading-relaxed"
+                  style={{ fontFamily: dmSans }}
+                >
+                  {current.desc}
+                </p>
+              </div>
             </div>
           </div>
         </div>
