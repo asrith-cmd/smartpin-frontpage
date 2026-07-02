@@ -4,6 +4,7 @@ import { sfPro, dmSans } from "@/constants/fonts";
 import type { HowItWorksFrame, HowItWorksTile } from "@/types/content";
 import { usePinnedScrollScrub } from "@/hooks/usePinnedScrollScrub";
 import { DecorativeWave } from "@/components/common/DecorativeWave";
+import { ScrollRevealText } from "@/components/common/ScrollRevealText";
 
 import rfidVideo from "@/assets/media/how-it-works/rfid.mp4";
 import rfidImg from "@/assets/media/how-it-works/rfid.png";
@@ -81,17 +82,46 @@ export function HowItWorksSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const [activeFrame, setActiveFrame] = useState(0);
+  const [scale, setScale] = useState(1);
+  const scaleRef = useRef(1);
   const prevTileRef = useRef(-1);
 
   const activeTile = FRAMES[activeFrame].tile;
   const section = TILES[activeTile];
 
+  // On narrow viewports the carousel's own row is narrower than ACTIVE_W,
+  // so shrink every frame (and the gaps between them) to fit — never upscale
+  // past the original design size.
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const next = Math.min(1, entry.contentRect.width / ACTIVE_W);
+      scaleRef.current = next;
+      setScale(next);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const activeW = Math.round(ACTIVE_W * scale);
+  const activeH = Math.round(ACTIVE_H * scale);
+  const peekW = Math.round(PEEK_W * scale);
+  const peekH = Math.round(PEEK_H * scale);
+  const gapPx = Math.round(GAP * scale);
+
   // Calculate the offset so the active frame is always centered. Since the
   // track is positioned at left: 50%, we move it left by the cumulative
   // width of every frame before the active one (they're all PEEK_W) plus
-  // half the active frame's width (ACTIVE_W).
-  const offsetForIndex = (idx: number) => -(idx * (PEEK_W + GAP) + ACTIVE_W / 2);
+  // half the active frame's width (ACTIVE_W). Reads scaleRef (not the scale
+  // state) so it stays correct even though usePinnedScrollScrub only
+  // captures this closure once, on mount.
+  const offsetForIndex = (idx: number) => {
+    const s = scaleRef.current;
+    return -(idx * (PEEK_W * s + GAP * s) + (ACTIVE_W * s) / 2);
+  };
 
   usePinnedScrollScrub({
     triggerRef: sectionRef,
@@ -132,7 +162,7 @@ export function HowItWorksSection() {
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="relative bg-black overflow-hidden h-screen flex flex-col"
+      className="relative bg-black overflow-hidden h-screen flex flex-col scroll-mt-[68px] md:scroll-mt-[85px]"
     >
       {/* Top separator */}
       <div
@@ -143,24 +173,39 @@ export function HowItWorksSection() {
         }}
       />
 
-      <div className="relative z-10 w-full flex flex-col h-full px-5 md:px-20 py-10 md:py-14 max-w-[1440px] mx-auto">
+      <div className="relative z-10 w-full flex flex-col h-full px-5 md:px-20 md:pt-[70px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8 relative shrink-0">
           <DecorativeWave />
-          <p className="relative z-10 text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-4" style={{ fontFamily: sfPro }}>
-            How it works?
-          </p>
-          <h2 className="relative z-10 text-[#E8E8EF] text-4xl md:text-[70px] leading-[1.1] font-medium" style={{ fontFamily: sfPro }}>
-            Smart pin work flow
+          <ScrollRevealText
+            text="How it works?"
+            className="relative z-10 block text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-4"
+            revealBy="words"
+            startPercent={88}
+            endPercent={58}
+            dimOpacity={0.18}
+          />
+          <h2
+            className="relative z-10 text-[#E8E8EF] text-4xl md:text-[70px] leading-[1.1] font-medium"
+            style={{ fontFamily: sfPro }}
+          >
+            <ScrollRevealText
+              text="Smart pin work flow"
+              className="block"
+              revealBy="words"
+              startPercent={82}
+              endPercent={50}
+              dimOpacity={0.18}
+            />
           </h2>
         </div>
 
-        {/* Main row: left panel + carousel */}
-        <div className="flex flex-1 items-center gap-10 lg:gap-16 min-h-0">
+        {/* Main row: left panel + carousel — stacked on mobile, side-by-side from md up */}
+        <div className="flex flex-col md:flex-row flex-1 items-center gap-6 md:gap-10 lg:gap-16 min-h-0">
 
           {/* Left: active tile only - isolated from transforms */}
-          <div ref={leftRef} className="shrink-0 w-[280px] lg:w-[320px] relative z-20">
+          <div ref={leftRef} className="shrink-0 w-full md:w-[280px] lg:w-[320px] relative z-20">
             <h3
               className="text-[#E8E8EF] text-xl md:text-2xl font-medium leading-[1.33] mb-3"
               style={{ fontFamily: sfPro }}
@@ -183,15 +228,16 @@ export function HowItWorksSection() {
 
           {/* Carousel: overflow hidden, active frame always centered */}
           <div
-            className="flex-1 relative overflow-hidden flex items-center justify-center my-auto"
-            style={{ height: ACTIVE_H }}
+            ref={carouselRef}
+            className="w-full md:flex-1 relative overflow-hidden flex items-center justify-center my-auto"
+            style={{ height: activeH }}
           >
             {/* Track — positioned so active frame center = container center */}
             <div
               ref={trackRef}
               className="absolute flex items-center"
               style={{
-                gap: GAP,
+                gap: gapPx,
                 willChange: "transform",
                 left: "50%"
               }}
@@ -205,8 +251,8 @@ export function HowItWorksSection() {
                     key={i}
                     className="shrink-0 rounded-[20px] overflow-hidden"
                     style={{
-                      width: isActive ? ACTIVE_W : PEEK_W,
-                      height: isActive ? ACTIVE_H : PEEK_H,
+                      width: isActive ? activeW : peekW,
+                      height: isActive ? activeH : peekH,
                       background: "#111",
                       opacity: isPast ? 0 : 1,
                       transition: "width 0.5s cubic-bezier(0.4,0,0.2,1), height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease",

@@ -1,7 +1,7 @@
 
-  # Landing Page Design Request
+  # Smart Pin
 
-  This is a code bundle for Landing Page Design Request. The original project is available at https://www.figma.com/design/1Z2LEZ84fGr7nQZD8oygPr/Landing-Page-Design-Request.
+  This is a code bundle for the Smart Pin landing page. The original project is available at https://www.figma.com/design/1Z2LEZ84fGr7nQZD8oygPr/Landing-Page-Design-Request.
 
   ## Running the code
 

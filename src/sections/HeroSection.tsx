@@ -2,8 +2,12 @@ import heroBg from "@/assets/images/hero/hero.png";
 import { sfPro } from "@/constants/fonts";
 import { Button } from "@/components/common/Button";
 import { ArrowIcon } from "@/components/common/ArrowIcon";
+import { useContactForm } from "@/providers/ContactFormProvider";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 export function HeroSection() {
+  const { openForm } = useContactForm();
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#161617]">
       {/* Background hero image — right side */}
@@ -11,7 +15,7 @@ export function HeroSection() {
         <img
           src={heroBg}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover object-right"
+          className="absolute inset-0 w-full h-full object-cover object-center md:object-right"
           aria-hidden
         />
         {/* Left gradient fade */}
@@ -20,10 +24,13 @@ export function HeroSection() {
         <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#161617] to-transparent" />
         {/* Top-left darkening */}
         <div className="absolute top-0 left-0 w-2/3 h-full bg-gradient-to-r from-[#161617] to-transparent" />
+        {/* Mobile-only scrim: content is centered on mobile, so it can sit anywhere over
+            the (center-cropped) image — flatten contrast everywhere instead of just the left */}
+        <div className="absolute inset-0 bg-black/40 md:hidden" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 pt-[120px] md:pt-[226px] pb-24">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 pt-[240px] md:pt-[226px] pb-24 text-center md:text-left">
         {/* Eyebrow */}
         <p
           className="text-[#E8E8EF] text-xs md:text-sm tracking-[2.8px] uppercase mb-6 font-medium"
@@ -34,7 +41,7 @@ export function HeroSection() {
 
         {/* Headline */}
         <h1
-          className="text-[#E8E8EF] text-5xl md:text-[70px] leading-[1.1] mb-6 max-w-[560px] font-medium"
+          className="text-[#E8E8EF] text-5xl md:text-[70px] leading-[1.1] mb-6 max-w-[560px] mx-auto md:mx-0 font-medium"
           style={{ fontFamily: sfPro }}
         >
           School Safety.{" "}
@@ -44,18 +51,22 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p
-          className="text-[#858589] text-lg md:text-2xl leading-[1.33] mb-10 max-w-[405px] font-medium"
-          style={{ fontFamily: sfPro }}
+          className="text-[#858589] text-lg md:text-2xl leading-[1.33] mb-10 max-w-[405px] mx-auto md:mx-0 font-medium"
+          style={{
+            fontFamily: sfPro,
+            textShadow:
+              "0 1px 2px rgba(0,0,0,0.95), 0 0 6px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.8)",
+          }}
         >
           One Smart Pin for tracking, protection, and peace of mind.
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Button variant="filled-white" className="px-6 h-12">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+          <Button variant="filled-white" className="px-6 h-12" onClick={() => openForm("demo")}>
             Book a Demo
           </Button>
-          <Button variant="ghost" className="px-6 h-12">
+          <Button variant="ghost" className="px-6 h-12" onClick={() => scrollToSection("how-it-works")}>
             See How it Works
             <ArrowIcon />
           </Button>

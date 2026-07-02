@@ -3,8 +3,11 @@ import { sfPro } from "@/constants/fonts";
 import { Button } from "@/components/common/Button";
 import { ArrowIcon } from "@/components/common/ArrowIcon";
 import { DecorativeWave } from "@/components/common/DecorativeWave";
+import { useContactForm } from "@/providers/ContactFormProvider";
 
 export function UpgradeSection() {
+  const { openForm } = useContactForm();
+
   return (
     <section className="relative bg-[#161617] md:pt-25 overflow-hidden">
       {/* Bottom gradient */}
@@ -46,10 +49,10 @@ export function UpgradeSection() {
 
         {/* CTAs */}
         <div className="flex flex-wrap justify-center gap-2.5">
-          <Button variant="filled-blue" className="px-6 h-12">
+          <Button variant="filled-blue" className="px-6 h-12" onClick={() => openForm("demo")}>
             Book a Demo
           </Button>
-          <Button variant="ghost" className="px-6 h-12">
+          <Button variant="ghost" className="px-6 h-12" onClick={() => openForm("team")}>
             Contact Us
             <ArrowIcon />
           </Button>
