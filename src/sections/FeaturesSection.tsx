@@ -4,6 +4,7 @@ import { sfPro, dmSans } from "@/constants/fonts";
 import type { SectionCopyItem } from "@/types/content";
 import { useCanvasImageSequence } from "@/hooks/useCanvasImageSequence";
 import { usePinnedScrollScrub } from "@/hooks/usePinnedScrollScrub";
+import type { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollRevealText } from "@/components/common/ScrollRevealText";
 
 const FRAME_COUNT = 240;
@@ -17,32 +18,41 @@ const parts: SectionCopyItem[] = [
     desc: "Designed to be lightweight, durable, and comfortable enough to wear every day without compromise.",
   },
   {
-    title: "RFID Module",
-    desc: "Secure RFID technology enables fast, contactless check-ins in less than a second.",
-  },
-  {
-    title: "GPS Module",
-    desc: "Real-time location updates help schools and parents stay connected with confidence.",
-  },
-  {
     title: "PCB",
     desc: "A custom-engineered circuit board seamlessly powers every sensor, connection, and interaction.",
   },
   {
-    title: "Cellular Communication Module",
-    desc: "Independent cellular connectivity keeps Smart Pin communicating, even when Wi-Fi isn't available.",
+    title: "Side Frame",
+    desc: "Durable impact resistant fixture which increases over all durability of the pin.",
+  },
+  {
+    title: "Battery",
+    desc: "2000 mAh durable safe and thermal resistant battery with 7 days of battery for a stress free tracking.",
+  },
+  {
+    title: "Back Enclosure",
+    desc: "Engineered to protect the smart pin internal components from impacts, dust, and everyday wear. IP67 grade dust and waterproof.",
+  },
+  {
+    title: "Attachment Latch",
+    desc: "Designed to securely fasten the smart pin to students uniform ensuring firm and reliable hold throughout the day.",
   },
 ];
+
+// Horizontal center of each part as % of canvas width (measured from screenshot)
+const PART_X = [40, 48, 53, 63, 70, 75];
 
 // Frame where the parts are fully dispersed — the sequence pauses here.
 const FREEZE_FRAME = 120;
 
-// Scroll-progress phases within the pin:
-// 0 -> DISPERSE_END        : scrub frames 0 -> FREEZE_FRAME (parts fly apart)
-// DISPERSE_END -> CAPTION_END : frame held at FREEZE_FRAME, captions cycle one per equal segment
-// CAPTION_END -> 1            : scrub frames FREEZE_FRAME -> last (parts close back up), then release
-const DISPERSE_END = 0.3;
-const CAPTION_END = 0.75;
+// Scroll-progress phases:
+// 0            -> DISPERSE_END  : scrub frames 0 -> FREEZE_FRAME
+// DISPERSE_END -> CAPTION_END  : frozen — captions reveal one by one
+// CAPTION_END  -> 1            : scrub FREEZE_FRAME -> last frame
+const DISPERSE_END = 0.15;
+const CAPTION_END = 0.88;
+// Each caption gets an equal slice of the frozen window
+const CAPTION_STEP = (CAPTION_END - DISPERSE_END) / parts.length;
 
 function progressToFrame(progress: number) {
   if (progress <= DISPERSE_END) {
@@ -56,17 +66,17 @@ function progressToFrame(progress: number) {
   return Math.round(FREEZE_FRAME + t * (FRAME_COUNT - 1 - FREEZE_FRAME));
 }
 
-function progressToPart(progress: number) {
-  if (progress <= DISPERSE_END || progress > CAPTION_END) return -1;
-  const t = (progress - DISPERSE_END) / (CAPTION_END - DISPERSE_END);
-  return Math.min(parts.length - 1, Math.floor(t * parts.length));
+// Returns how many captions (0-6) should be visible at this progress
+function visibleCount(progress: number): number {
+  if (progress <= DISPERSE_END) return 0;
+  if (progress > CAPTION_END) return 0;
+  return Math.min(parts.length, Math.ceil((progress - DISPERSE_END) / CAPTION_STEP));
 }
 
 export function FeaturesSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const captionRef = useRef<HTMLDivElement>(null);
-  const [activePart, setActivePart] = useState(0);
-  const [captionVisible, setCaptionVisible] = useState(false);
+  const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [revealedCount, setRevealedCount] = useState(0);
 
   const { canvasRef, frameRef, drawFrame } = useCanvasImageSequence({
     frameCount: FRAME_COUNT,
@@ -80,40 +90,36 @@ export function FeaturesSection() {
     triggerRef: sectionRef,
     endDistance: () => window.innerHeight * 3.6,
     scrub: 0.6,
-    onUpdate: (self) => {
+    onUpdate: (self: ScrollTrigger) => {
       const frame = progressToFrame(self.progress);
       frameRef.current = frame;
       drawFrame(frame);
-
-      const partIndex = progressToPart(self.progress);
-      setCaptionVisible((prev) => (prev !== (partIndex !== -1) ? partIndex !== -1 : prev));
-      if (partIndex !== -1) {
-        setActivePart((prev) => (prev !== partIndex ? partIndex : prev));
-      }
+      const next = visibleCount(self.progress);
+      setRevealedCount((prev) => (prev !== next ? next : prev));
     },
   });
 
-  // Fade the caption in/out, and re-pop it whenever the active part changes
+  // Only the active caption is visible; all others are fully hidden
   useEffect(() => {
-    if (!captionRef.current) return;
-    if (captionVisible) {
-      gsap.fromTo(
-        captionRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
-      );
-    } else {
-      gsap.to(captionRef.current, { opacity: 0, y: 12, duration: 0.3, ease: "power2.in" });
-    }
-  }, [activePart, captionVisible]);
-
-  const current = parts[activePart];
+    const activeIdx = revealedCount - 1;
+    captionRefs.current.forEach((el, i) => {
+      if (!el) return;
+      if (i === activeIdx) {
+        gsap.fromTo(el,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+        );
+      } else {
+        gsap.set(el, { opacity: 0, y: 8 });
+      }
+    });
+  }, [revealedCount]);
 
   return (
     <section
       id="features"
       ref={sectionRef}
-      className="relative bg-black pt-5 md:pt-3 pb-6 md:pb-10 overflow-hidden h-screen flex items-center"
+      className="relative bg-black pb-6 md:pb-10 overflow-hidden h-screen flex items-center scroll-mt-[68px] md:scroll-mt-[85px] pt-[120px] md:pt-[140px]"
     >
       {/* Background gradient */}
       <div
@@ -179,7 +185,7 @@ export function FeaturesSection() {
         </svg>
       </div>
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 w-full">
+      <div className="relative z-10 max-w-[1440px] mx-auto pb-14 px-5 md:px-20 w-full">
         {/* Section header (scroll-reveal, word by word) */}
         <div className="text-center mb-4 md:mb-6">
           <ScrollRevealText
@@ -213,40 +219,35 @@ export function FeaturesSection() {
           </h2>
         </div>
 
-        {/* Center: scroll-scrubbed exploded-parts sequence — height-bound so it always fits the viewport */}
-        <div className="flex justify-center">
-          <div className="relative w-auto max-w-[90vw]">
-            <div className="aspect-video h-[40vh] sm:h-[46vh] md:h-[52vh]">
-              <canvas ref={canvasRef} className="w-full h-full" />
-            </div>
-
-            {/* Rotating part caption, anchored under the leftmost part with a dot + line */}
-            <div className="mt-1 pl-[4%] md:pl-[6%]">
-              <div
-                ref={captionRef}
-                className="flex flex-col items-start text-left max-w-[300px]"
-                style={{ opacity: 0, transform: "translateY(12px)" }}
-              >
-                <span className="w-[6px] h-[6px] rounded-full bg-[#E8E8EF] shrink-0" />
-                <span
-                  className="w-px h-5 md:h-7"
-                  style={{ background: "linear-gradient(to bottom, #E8E8EF, transparent)" }}
-                />
-                <h3
-                  className="text-[#E8E8EF] text-lg md:text-xl font-normal mb-1"
-                  style={{ fontFamily: sfPro }}
-                >
-                  {current.title}
-                </h3>
-                <p
-                  className="text-[#858589] text-sm md:text-base leading-relaxed"
-                  style={{ fontFamily: dmSans }}
-                >
-                  {current.desc}
-                </p>
-              </div>
-            </div>
+        {/* Canvas + overlaid callouts */}
+        <div className="relative w-full">
+          <div className="aspect-video h-[38vh] sm:h-[44vh] md:h-[50vh] w-full">
+            <canvas ref={canvasRef} className="w-full h-full" />
           </div>
+
+          {/* Per-part callout labels, absolutely positioned below each component */}
+          {parts.map((part, i) => (
+            <div
+              key={part.title}
+              ref={(el) => { captionRefs.current[i] = el; }}
+              className="absolute flex flex-col items-start text-left"
+              style={{
+                left: `${PART_X[i]}%`,
+                top: "77%",
+                transform: "translateX(-50%)",
+                width: "13%",
+                opacity: 0,
+              }}
+            >
+              <img src="/image.png" alt="" className="h-15 w-1.5 mb-1.5" />
+              <h3 className="text-white text-xs md:text-sm font-bold mb-1 leading-tight tracking-wide" style={{ fontFamily: sfPro }}>
+                {part.title}
+              </h3>
+              <p className="text-[#9a9aa3] text-[9px] md:text-xs leading-snug hidden md:block" style={{ fontFamily: dmSans }}>
+                {part.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

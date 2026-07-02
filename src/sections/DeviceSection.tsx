@@ -105,7 +105,7 @@ export function DeviceSection() {
     <section
       id="product"
       ref={sectionRef}
-      className="relative bg-black py-20 md:py-32 overflow-hidden min-h-screen flex items-center"
+      className="relative bg-black py-20 md:py-32 overflow-hidden min-h-screen flex items-center scroll-mt-[68px] md:scroll-mt-[85px]"
     >
       {/* Decorative concentric rings behind the device */}
       <img
@@ -143,7 +143,7 @@ export function DeviceSection() {
           </div>
 
           {/* Center: scroll-scrubbed 3D device sequence */}
-          <div className="shrink-0 w-full max-w-[520px] sm:max-w-[580px] lg:w-[540px] xl:w-[640px] aspect-video">
+          <div className="shrink-0 w-full max-w-[530px] sm:max-w-[590px] lg:w-[550px] xl:w-[610px] aspect-video">
             <canvas
               ref={canvasRef}
               className="w-full h-full"
