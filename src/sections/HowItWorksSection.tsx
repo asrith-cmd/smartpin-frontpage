@@ -6,12 +6,12 @@ import { usePinnedScrollScrub } from "@/hooks/usePinnedScrollScrub";
 import { DecorativeWave } from "@/components/common/DecorativeWave";
 import { ScrollRevealText } from "@/components/common/ScrollRevealText";
 
-import rfidImg from "@/assets/media/how-it-works/rfid.png";
-import smartparentImg from "@/assets/media/how-it-works/smartparent.png";
-import liveGpsImg from "@/assets/media/how-it-works/live-gps.png";
-import liveGps2Img from "@/assets/media/how-it-works/live-gps2.png";
-import sosImg from "@/assets/media/how-it-works/sos.png";
-import voiceImg from "@/assets/media/how-it-works/voice-rec.png";
+import rfidImg from "@/assets/media/how-it-works/rfid.jpeg";
+import smartparentImg from "@/assets/media/how-it-works/parent_notifications_488x550.png";
+import liveGpsImg from "@/assets/media/how-it-works/bus_tracking_488x550.png";
+import liveGps2Img from "@/assets/media/how-it-works/rfid_bus_scan_488x550.png";
+import sosImg from "@/assets/media/how-it-works/sos-notification.png";
+import voiceImg from "@/assets/media/how-it-works/sos-alert.png";
 
 // 7 frames total — tile index tells which left-panel tile is active
 const FRAMES: HowItWorksFrame[] = [
@@ -156,7 +156,7 @@ export function HowItWorksSection() {
         }}
       />
 
-      <div className="relative z-10 mt-[50px] w-full flex flex-col h-full px-5 md:px-20 md:pt-[70px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
+      <div className="relative z-10 mt-[50px] w-full flex flex-col h-full px-5 md:px-20 md:pt-[10px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8 relative shrink-0">
