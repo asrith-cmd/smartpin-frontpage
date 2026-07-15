@@ -6,58 +6,38 @@ import { usePinnedScrollScrub } from "@/hooks/usePinnedScrollScrub";
 import { DecorativeWave } from "@/components/common/DecorativeWave";
 import { ScrollRevealText } from "@/components/common/ScrollRevealText";
 
-import rfidVideo from "@/assets/media/how-it-works/rfid.mp4";
 import rfidImg from "@/assets/media/how-it-works/rfid.png";
-import busVideo from "@/assets/media/how-it-works/bus-scanning.mp4";
-import busImg from "@/assets/media/how-it-works/bus-scanning.png";
-import schoolZoneVideo from "@/assets/media/how-it-works/school-zone.mp4";
-import schoolZoneImg from "@/assets/media/how-it-works/school-zone.png";
-import gpsImg from "@/assets/media/how-it-works/gpstracking.png";
-import geofenceVideo from "@/assets/media/how-it-works/gpsfencing.mp4";
-import sosVideo from "@/assets/media/how-it-works/SOS.mp4";
-import sosImg from "@/assets/media/how-it-works/SOS.png";
-import voiceVideo from "@/assets/media/how-it-works/voice-recording.mp4";
+import smartparentImg from "@/assets/media/how-it-works/smartparent.png";
+import liveGpsImg from "@/assets/media/how-it-works/live-gps.png";
+import liveGps2Img from "@/assets/media/how-it-works/live-gps2.png";
+import sosImg from "@/assets/media/how-it-works/sos.png";
+import voiceImg from "@/assets/media/how-it-works/voice-rec.png";
 
-// 11 frames total — tile index tells which left-panel tile is active
+// 7 frames total — tile index tells which left-panel tile is active
 const FRAMES: HowItWorksFrame[] = [
-  { tile: 0, type: "video", src: rfidVideo },
   { tile: 0, type: "image", src: rfidImg },
-  { tile: 1, type: "video", src: busVideo },
-  { tile: 1, type: "image", src: busImg },
-  { tile: 2, type: "video", src: schoolZoneVideo },
-  { tile: 2, type: "image", src: schoolZoneImg },
-  { tile: 3, type: "image", src: gpsImg },
-  { tile: 4, type: "video", src: geofenceVideo },
-  { tile: 5, type: "video", src: sosVideo },
-  { tile: 5, type: "image", src: sosImg },
-  { tile: 6, type: "video", src: voiceVideo },
+  { tile: 1, type: "image", src: smartparentImg },
+  { tile: 2, type: "image", src: liveGpsImg },
+  { tile: 2, type: "image", src: liveGps2Img },
+  { tile: 3, type: "image", src: sosImg },
+  { tile: 4, type: "image", src: voiceImg },
 ];
 
 const TILES: HowItWorksTile[] = [
   {
     title: "Real-Time School Entry and Exit Tracking",
-    label: "Automatic Attendance, No Manual Registers",
-    desc: "Students are automatically marked present as they enter school premises. Attendance data is instantly available to teachers and parents.",
+    label: "Automatic RFID attendance and digital footprint throughout the campus",
+    desc: "the hassle of manual attendance is replaced by our smart attendance system which scans attendance through all the classes for entire day instead of one single time attendance.",
   },
   {
-    title: "Bus Boarding & Scanning",
-    label: "Know When Your Child Gets On and Off the Bus",
-    desc: "The Smart Pin is scanned while boarding and exiting the school bus, providing real-time notifications and visibility for parents and school administrators.",
+    title: "Smart parent teacher notification system",
+    label: "Instant Notifications for School Events",
+    desc: "Parents gain greater visibility into their child's daily school journey, with customizable notifications based on their preferences",
   },
   {
-    title: "School Zone Scanning",
-    label: "Real-Time School Entry and Exit Tracking",
-    desc: "Track student movement within designated school zones and maintain accurate records of arrivals and departures.",
-  },
-  {
-    title: "GPS Tracking",
+    title: "Live GPS tracking",
     label: "Always Know Where Your Child Is",
-    desc: "Built-in GPS technology enables secure, real-time location visibility of students during transportation and authorized activities.",
-  },
-  {
-    title: "Geo-Fencing",
-    label: "Intelligent Safe Zone Monitoring",
-    desc: "Create virtual safety boundaries around schools and predefined locations. Receive instant alerts whenever a student enters or exits these zones.",
+    desc: "track the students location in real time more accurate than regular bus tracker system more optimized, specifically to individual tracking and higher visibility through out the journey",
   },
   {
     title: "SOS Emergency",
@@ -71,12 +51,12 @@ const TILES: HowItWorksTile[] = [
   },
 ];
 
-const TOTAL = FRAMES.length; // 11
+const TOTAL = FRAMES.length; // 6
 const ACTIVE_W = 488;
 const ACTIVE_H = 550;
-const PEEK_W = 244;
+const PEEK_W = 200;
 const PEEK_H = 260;
-const GAP = 24;
+const GAP = 20;
 
 export function HowItWorksSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -87,13 +67,12 @@ export function HowItWorksSection() {
   const [scale, setScale] = useState(1);
   const scaleRef = useRef(1);
   const prevTileRef = useRef(-1);
+  // store the gsap x value directly so scrub drives it without double-smoothing
+  const xRef = useRef(0);
 
   const activeTile = FRAMES[activeFrame].tile;
   const section = TILES[activeTile];
 
-  // On narrow viewports the carousel's own row is narrower than ACTIVE_W,
-  // so shrink every frame (and the gaps between them) to fit — never upscale
-  // past the original design size.
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
@@ -101,9 +80,12 @@ export function HowItWorksSection() {
       const next = Math.min(1, entry.contentRect.width / ACTIVE_W);
       scaleRef.current = next;
       setScale(next);
+      // re-snap track to current frame when container resizes
+      gsap.set(trackRef.current, { x: offsetForIndex(activeFrame, next) });
     });
     observer.observe(el);
     return () => observer.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activeW = Math.round(ACTIVE_W * scale);
@@ -112,37 +94,38 @@ export function HowItWorksSection() {
   const peekH = Math.round(PEEK_H * scale);
   const gapPx = Math.round(GAP * scale);
 
-  // Calculate the offset so the active frame is always centered. Since the
-  // track is positioned at left: 50%, we move it left by the cumulative
-  // width of every frame before the active one (they're all PEEK_W) plus
-  // half the active frame's width (ACTIVE_W). Reads scaleRef (not the scale
-  // state) so it stays correct even though usePinnedScrollScrub only
-  // captures this closure once, on mount.
-  const offsetForIndex = (idx: number) => {
-    const s = scaleRef.current;
-    return -(idx * (PEEK_W * s + GAP * s) + (ACTIVE_W * s) / 2);
-  };
+  const offsetForIndex = (idx: number, s = scaleRef.current) =>
+    -(idx * (PEEK_W * s + GAP * s) + (ACTIVE_W * s) / 2);
 
   usePinnedScrollScrub({
     triggerRef: sectionRef,
-    endDistance: () => window.innerHeight * (TOTAL - 1) * 1.2,
-    scrub: 1.5,
+    // give each frame ~1 viewport height of scroll distance
+    endDistance: () => window.innerHeight * (TOTAL - 1) * 1.6,
+    // scrub:true = 1:1 with scroll, no lag — smoothness comes from CSS transition
+    scrub: true,
     onUpdate: (self) => {
       const rawIdx = self.progress * (TOTAL - 1);
-      const idx = Math.min(TOTAL - 1, Math.round(rawIdx));
+      // use floor+threshold so the snap feels intentional, not jumpy
+      const idx = Math.min(TOTAL - 1, Math.floor(rawIdx + 0.35));
 
-      // Smooth tween to the offset of the active frame
-      gsap.to(trackRef.current, {
-        x: offsetForIndex(idx),
-        duration: 0.6,
-        ease: "power3.out",
-        overwrite: true,
-      });
+      // Drive the track directly via gsap.set (scrub already smooths it)
+      const targetX = offsetForIndex(idx);
+      if (targetX !== xRef.current) {
+        xRef.current = targetX;
+        gsap.to(trackRef.current, {
+          x: targetX,
+          duration: 0.45,
+          ease: "power2.out",
+          overwrite: true,
+        });
+      }
 
       setActiveFrame(idx);
     },
     onInit: () => {
-      gsap.set(trackRef.current, { x: offsetForIndex(0) });
+      const x = offsetForIndex(0);
+      xRef.current = x;
+      gsap.set(trackRef.current, { x });
     },
   });
 
@@ -153,8 +136,8 @@ export function HowItWorksSection() {
     prevTileRef.current = activeTile;
     gsap.fromTo(
       leftRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }
     );
   }, [activeTile]);
 
@@ -173,7 +156,7 @@ export function HowItWorksSection() {
         }}
       />
 
-      <div className="relative z-10 w-full flex flex-col h-full px-5 md:px-20 md:pt-[70px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
+      <div className="relative z-10 mt-[50px] w-full flex flex-col h-full px-5 md:px-20 md:pt-[70px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8 relative shrink-0">
@@ -244,7 +227,6 @@ export function HowItWorksSection() {
             >
               {FRAMES.map((frame, i) => {
                 const isActive = i === activeFrame;
-                const isPast = i < activeFrame;
 
                 return (
                   <div
@@ -254,28 +236,26 @@ export function HowItWorksSection() {
                       width: isActive ? activeW : peekW,
                       height: isActive ? activeH : peekH,
                       background: "#111",
-                      opacity: isPast ? 0 : 1,
-                      transition: "width 0.5s cubic-bezier(0.4,0,0.2,1), height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease",
+                      opacity: isActive ? 1 : 0.4,
+                      transition: "width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
                       flexShrink: 0,
                     }}
                   >
-                    {!isPast && (
-                      frame.type === "video" ? (
-                        <video
-                          src={frame.src}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={frame.src}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      )
+                    {frame.type === "video" ? (
+                      <video
+                        src={frame.src}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <img
+                        src={frame.src}
+                        alt=""
+                        className="w-full h-full object-contain"
+                      />
                     )}
                   </div>
                 );

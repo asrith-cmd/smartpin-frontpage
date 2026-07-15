@@ -5,7 +5,14 @@ interface UseCanvasImageSequenceOptions {
   frameWidth: number;
   frameHeight: number;
   frameUrl: (index: number) => string;
+  /** "contain" (default) letterboxes to fit; "cover" fills the canvas, cropping overflow. */
+  fit?: "contain" | "cover";
 }
+
+/** "contain"/"cover" pick the fit mode; a number is used directly as the draw scale
+ *  (frame pixels -> canvas pixels), letting callers blend smoothly between the two
+ *  instead of snapping between them. */
+type FitOverride = "contain" | "cover" | number;
 
 /**
  * Preloads a numbered sequence of images and exposes a `drawFrame(index)`
@@ -21,12 +28,13 @@ export function useCanvasImageSequence({
   frameWidth,
   frameHeight,
   frameUrl,
+  fit = "contain",
 }: UseCanvasImageSequenceOptions) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const frameRef = useRef(0);
 
-  const drawFrame = (index: number) => {
+  const drawFrame = (index: number, fitOverride?: FitOverride) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
@@ -48,7 +56,12 @@ export function useCanvasImageSequence({
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    const scale = Math.min(w / frameWidth, h / frameHeight);
+    const activeFit = fitOverride ?? fit;
+    const scale = typeof activeFit === "number"
+      ? activeFit
+      : activeFit === "cover"
+        ? Math.max(w / frameWidth, h / frameHeight)
+        : Math.min(w / frameWidth, h / frameHeight);
     const dw = frameWidth * scale;
     const dh = frameHeight * scale;
     ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);

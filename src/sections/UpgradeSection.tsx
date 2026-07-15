@@ -26,7 +26,7 @@ export function UpgradeSection() {
       />
 
       {/* Text content — centered */}
-      <div className="relative z-10 max-w-[1000px] mx-auto px-5 text-center">
+<div className="relative z-10 mt-10 md:mt-0 max-w-[1000px] mx-auto px-5 text-center">
         <p
           className="text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-6"
           style={{ fontFamily: sfPro }}
@@ -62,48 +62,12 @@ export function UpgradeSection() {
       {/* School image */}
       <div className="relative z-10 mt-12 md:mt-20 flex justify-center">
         {/* Ellipse rings */}
-       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[1030px] h-[375px] pointer-events-none opacity-70 animate-pulse">
+       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[1030px] h-[375px] pointer-events-none opacity-70">
           <svg className="absolute inset-0 w-full h-full" fill="none" viewBox="0 0 1030 375">
-            <ellipse cx="515" cy="187.5" rx="514.75" ry="187.25" stroke="#262626" strokeWidth="0.5">
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 515 187.5"
-                to="360 515 187.5"
-                dur="18s"
-                repeatCount="indefinite"
-              />
-            </ellipse>
-            <ellipse cx="515" cy="187.5" rx="397" ry="144.14" stroke="#353535" strokeWidth="0.5">
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="360 515 187.5"
-                to="0 515 187.5"
-                dur="14s"
-                repeatCount="indefinite"
-              />
-            </ellipse>
-            <ellipse cx="515" cy="187.5" rx="278.65" ry="101.03" stroke="#3A3A3A" strokeWidth="0.5">
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 515 187.5"
-                to="360 515 187.5"
-                dur="10s"
-                repeatCount="indefinite"
-              />
-            </ellipse>
-            <ellipse cx="515" cy="187.5" rx="197.35" ry="72" stroke="#626262" strokeWidth="0.5">
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="360 515 187.5"
-                to="0 515 187.5"
-                dur="7s"
-                repeatCount="indefinite"
-              />
-            </ellipse>
+            <ellipse cx="515" cy="187.5" rx="514.75" ry="187.25" stroke="#262626" strokeWidth="0.5" />
+            <ellipse cx="515" cy="187.5" rx="397" ry="144.14" stroke="#353535" strokeWidth="0.5" />
+            <ellipse cx="515" cy="187.5" rx="278.65" ry="101.03" stroke="#3A3A3A" strokeWidth="0.5" />
+            <ellipse cx="515" cy="187.5" rx="197.35" ry="72" stroke="#626262" strokeWidth="0.5" />
           </svg>
         </div>
         <img

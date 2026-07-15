@@ -2,12 +2,16 @@ import { useState } from "react";
 import { useContactForm } from "@/providers/ContactFormProvider";
 import { SmartPinLogoSmall } from "@/components/common/SmartPinLogo";
 import { Button } from "@/components/common/Button";
+import { HERO_END, DEVICE_END, scrollToPhase } from "@/sections/introScrubber.constants";
 
+// "Product" and "Technology" point into the pinned hero->device->features
+// scrub, so a plain <a href="#id"> anchor jump won't land on the right
+// scroll-scrubbed frame — they scroll to a computed progress instead.
 const navLinks = [
-  { label: "Home", href: "#", sectionId: null as string | null },
-  { label: "Product", href: "#product", sectionId: "product" },
-  { label: "Technology", href: "#features", sectionId: "features" },
-  { label: "How it Works", href: "#how-it-works", sectionId: "how-it-works" },
+  { label: "Home", href: "#", onClick: null as (() => void) | null },
+  { label: "Product", href: "#product", onClick: () => scrollToPhase(HERO_END) },
+  { label: "Technology", href: "#features", onClick: () => scrollToPhase(DEVICE_END) },
+  { label: "How it Works", href: "#how-it-works", onClick: null as (() => void) | null },
 ];
 
 export function Navbar() {
@@ -29,6 +33,14 @@ export function Navbar() {
                 href={link.href}
                 className="text-sm leading-normal text-white hover:text-white/70 transition-colors"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
+                onClick={
+                  link.onClick
+                    ? (e) => {
+                        e.preventDefault();
+                        link.onClick!();
+                      }
+                    : undefined
+                }
               >
                 {link.label}
               </a>
@@ -75,7 +87,13 @@ export function Navbar() {
                   href={link.href}
                   className="text-[#E8E8EF] text-base py-1 border-b border-white/[0.06]"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => {
+                    setOpen(false);
+                    if (link.onClick) {
+                      e.preventDefault();
+                      link.onClick();
+                    }
+                  }}
                 >
                   {link.label}
                 </a>

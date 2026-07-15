@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;">
+    <h2>EmailJS Integration Test</h2>
+    <p>This will test your EmailJS setup by sending a demo form submission.</p>
+    
+    <button id="testDemo" style="background: #054FD5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 10px;">
+        Test Demo Form
+    </button>
+    
+    <button id="testPilot" style="background: #054FD5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 10px;">
+        Test Pilot Form
+    </button>
+    
+    <button id="testTeam" style="background: #054FD5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 10px;">
+        Test Team Form
+    </button>
+    
+    <div id="status" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div>
+
+    <script>
+        // Your EmailJS configuration
+        const EMAILJS_CONFIG = {
+            SERVICE_ID: 'service_lpz7lfn',
+            TEMPLATE_ID: 'template_skfr48d', 
+            PUBLIC_KEY: 'quRfdU10UPqbWQgBv'
+        };
+
+        // Initialize EmailJS
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+
+        function showStatus(message, isSuccess) {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.style.backgroundColor = isSuccess ? '#d4edda' : '#f8d7da';
+            status.style.color = isSuccess ? '#155724' : '#721c24';
+            status.style.border = `1px solid ${isSuccess ? '#c3e6cb' : '#f5c6cb'}`;
+            status.textContent = message;
+        }
+
+        async function sendTestEmail(formType, testData) {
+            showStatus('Sending test email...', true);
+            
+            try {
+                const response = await emailjs.send(
+                    EMAILJS_CONFIG.SERVICE_ID,
+                    EMAILJS_CONFIG.TEMPLATE_ID,
+                    testData,
+                    EMAILJS_CONFIG.PUBLIC_KEY
+                );
+                
+                console.log('EmailJS Success:', response);
+                showStatus(`✅ ${formType} test email sent successfully! Check harish@aquataurustech.com`, true);
+            } catch (error) {
+                console.error('EmailJS Error:', error);
+                showStatus(`❌ Failed to send ${formType} email: ${error.text || error.message}`, false);
+            }
+        }
+
+        // Test Demo Form
+        document.getElementById('testDemo').addEventListener('click', () => {
+            const testData = {
+                form_type: 'DEMO',
+                to_email: 'harish@aquataurustech.com',
+                reply_to: 'test@example.com',
+                subject: 'Demo Request from Test School',
+                full_name: 'John Doe',
+                work_email: 'test@example.com',
+                phone: '(555) 123-4567',
+                school_name: 'Test Academy',
+                role: 'IT Director',
+                preferred_date: '2024-01-15',
+                message: 'This is a test demo request from the EmailJS integration test.'
+            };
+            
+            sendTestEmail('Demo', testData);
+        });
+
+        // Test Pilot Form  
+        document.getElementById('testPilot').addEventListener('click', () => {
+            const testData = {
+                form_type: 'PILOT',
+                to_email: 'harish@aquataurustech.com',
+                reply_to: 'test@example.com',
+                subject: 'Pilot Program Request from Test District',
+                full_name: 'Jane Smith',
+                work_email: 'test@example.com',
+                phone: '(555) 987-6543',
+                school_district: 'Test School District',
+                student_count: '501-1000',
+                role: 'Principal',
+                message: 'This is a test pilot program request from the EmailJS integration test.'
+            };
+            
+            sendTestEmail('Pilot', testData);
+        });
+
+        // Test Team Form
+        document.getElementById('testTeam').addEventListener('click', () => {
+            const testData = {
+                form_type: 'TEAM',
+                to_email: 'harish@aquataurustech.com', 
+                reply_to: 'test@example.com',
+                subject: 'Contact Form: General Inquiry',
+                full_name: 'Mike Johnson',
+                email: 'test@example.com',
+                phone: '(555) 456-7890',
+                topic: 'General Inquiry',
+                message: 'This is a test general inquiry from the EmailJS integration test.'
+            };
+            
+            sendTestEmail('Team', testData);
+        });
+    </script>
+</body>
+</html>

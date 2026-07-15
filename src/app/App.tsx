@@ -1,8 +1,6 @@
 import { ContactFormProvider } from "@/providers/ContactFormProvider";
 import { Navbar } from "@/components/layout/Navbar";
-import { HeroSection } from "@/sections/HeroSection";
-import { DeviceSection } from "@/sections/DeviceSection";
-import { FeaturesSection } from "@/sections/FeaturesSection";
+import { IntroScrubberSection } from "@/sections/IntroScrubberSection";
 import { HowItWorksSection } from "@/sections/HowItWorksSection";
 import { UpgradeSection } from "@/sections/UpgradeSection";
 import { BlueBanner } from "@/sections/BlueBanner";
@@ -14,9 +12,7 @@ export default function App() {
       <div className="bg-black min-h-screen w-full overflow-x-hidden">
         <Navbar />
         <main>
-          <HeroSection />
-          <DeviceSection />
-          <FeaturesSection />
+          <IntroScrubberSection />
           <HowItWorksSection />
           <UpgradeSection />
           <BlueBanner />
