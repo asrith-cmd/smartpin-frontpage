@@ -21,12 +21,12 @@ export function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       <nav className="max-w-[1440px] mx-auto">
-        <div className="px-5 md:px-20 h-[64px] md:h-[76px] flex items-center justify-between gap-8">
+        <div className="px-5 md:px-10 lg:px-20 h-[64px] md:h-[72px] lg:h-[76px] flex items-center justify-between gap-4 md:gap-6 lg:gap-8">
           {/* Logo */}
           <SmartPinLogoSmall />
 
           {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-11">
+          <div className="hidden lg:flex items-center gap-7 xl:gap-11">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -48,7 +48,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop CTAs */}
-          <div className="hidden md:flex items-center gap-2.5">
+          <div className="hidden lg:flex items-center gap-2.5">
             <Button variant="outline" className="w-[112px] py-[10px]" onClick={() => openForm("demo")}>
               Book a Demo
             </Button>
@@ -59,7 +59,7 @@ export function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-[#E8E8EF] p-2 -mr-2"
+            className="lg:hidden text-[#E8E8EF] p-2 -mr-2"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >
@@ -79,7 +79,7 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {open && (
-          <div className="md:hidden bg-[#161617] rounded-b-3xl border-t border-white/[0.06] px-5 py-6">
+          <div className="lg:hidden bg-[#161617] rounded-b-3xl border-t border-white/[0.06] px-5 md:px-10 py-6 md:py-8">
             <div className="flex flex-col gap-5">
               {navLinks.map((link) => (
                 <a

@@ -370,7 +370,7 @@ export function IntroScrubberSection() {
         <div className="absolute top-0 left-0 w-2/3 h-full bg-gradient-to-r from-[#161617] to-transparent" />
         <div className="absolute inset-0 bg-black/40 md:hidden" />
 
-        <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 pt-[240px] md:pt-[226px] pb-24 text-center md:text-left">
+        <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 pt-[220px] md:pt-[190px] lg:pt-[226px] pb-20 md:pb-24 text-center md:text-left">
           <p
             className="text-[#E8E8EF] text-xs md:text-sm tracking-[2.8px] uppercase mb-6 font-medium"
             style={{ fontFamily: sfPro }}
@@ -379,7 +379,7 @@ export function IntroScrubberSection() {
           </p>
 
           <h1
-            className="text-[#E8E8EF] text-5xl md:text-[70px] leading-[1.1] mb-6 max-w-[560px] mx-auto md:mx-0 font-medium"
+            className="text-[#E8E8EF] text-5xl md:text-[54px] lg:text-[70px] leading-[1.1] mb-6 max-w-[560px] mx-auto md:mx-0 font-medium"
             style={{ fontFamily: sfPro }}
           >
             School Safety. <br />
@@ -387,7 +387,7 @@ export function IntroScrubberSection() {
           </h1>
 
           <p
-            className="text-[#858589] text-lg md:text-2xl leading-[1.33] mb-10 max-w-[405px] mx-auto md:mx-0 font-medium"
+            className="text-[#858589] text-lg md:text-xl lg:text-2xl leading-[1.33] mb-10 max-w-[405px] mx-auto md:mx-0 font-medium"
             style={{
               fontFamily: sfPro,
               textShadow: "0 1px 2px rgba(0,0,0,0.95), 0 0 6px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.8)",
@@ -407,7 +407,7 @@ export function IntroScrubberSection() {
           </div>
         </div>
 
-        <div className="absolute bottom-10 left-5 md:left-20 hidden md:flex items-center gap-2">
+        <div className="absolute bottom-10 left-5 md:left-10 lg:left-20 hidden md:flex items-center gap-2">
           <div className="border border-[#E8E8EF] rounded-xl flex items-center justify-center size-6">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M6 2V10M3 7L6 10L9 7" stroke="#E8E8EF" strokeLinecap="round" strokeLinejoin="round" />
@@ -430,11 +430,11 @@ export function IntroScrubberSection() {
             backgroundPosition: 'center center'
           }}
         />
-        <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-20 w-full h-full flex items-center">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10 w-full h-full lg:h-auto pt-20 pb-4 lg:pt-0 lg:pb-0">
-            <div className="flex-none lg:flex-1 max-w-[350px] w-full mx-auto lg:mx-0">
+        <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 w-full h-full flex items-center">
+          <div className="flex flex-col md:gap-10 xl:flex-row items-center gap-8 lg:gap-10 w-full h-full lg:h-auto pt-16 md:pt-20 xl:pt-0 pb-4 lg:pb-0">
+            <div className="flex-none lg:flex-1 max-w-[320px] md:max-w-[360px] xl:max-w-[350px] w-full mx-auto lg:mx-0">
               <h2
-                className="text-[#E8E8EF] text-4xl md:text-[44px] lg:text-[48px] leading-tight font-normal"
+                className="text-[#E8E8EF] text-4xl md:text-[40px] lg:text-[48px] leading-tight font-normal"
                 style={{ fontFamily: sfPro }}
               >
                 <ScrollRevealText
@@ -459,11 +459,11 @@ export function IntroScrubberSection() {
             {/* Spacer preserving the layout gap where the device renders (shared canvas sits behind) */}
             <div
               ref={deviceSpacerRef}
-              className="w-full max-w-[530px] sm:max-w-[590px] flex-1 min-h-0 lg:flex-none lg:shrink-0 lg:w-[550px] xl:w-[610px] lg:aspect-video"
+              className="w-full max-w-[530px] md:max-w-[590px] flex-1 min-h-[280px] md:min-h-[340px] lg:min-h-0 lg:flex-none lg:shrink-0 lg:w-[550px] xl:w-[610px] lg:aspect-video"
               aria-hidden
             />
 
-            <div className="flex-none lg:flex-1 max-w-[300px] w-full mx-auto lg:mx-0 flex flex-col gap-8">
+            <div className="flex-none lg:flex-1 max-w-[300px] md:max-w-[340px] w-full mx-auto lg:mx-0 flex flex-col gap-8">
               {points.map((p, i) => (
                 <div
                   key={p.title}
@@ -519,7 +519,7 @@ export function IntroScrubberSection() {
 
         <div
           className="absolute pointer-events-none"
-          style={{ width: "76.67vw", height: "14.69vw", bottom: "-5%", right: "-35%", transform: "rotate(20deg)", opacity: 1 }}
+          style={{ width: "76.67vw", height: "14.69vw", bottom: "-5%", right: "-40%", transform: "rotate(20deg)", opacity: 1 }}
         >
           <svg width="100%" height="100%" viewBox="0 0 1139 246.486" fill="none" preserveAspectRatio="none">
             <path
@@ -530,7 +530,7 @@ export function IntroScrubberSection() {
             />
             <defs>
               <linearGradient id="v4grad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
-                <stop offset="0%" stopColor="rgba(0, 35, 98, 0)" />
+                <stop offset="0%" stopColor="rgba(0, 35, 98,0)" />
                 <stop offset="50%" stopColor="#054FD5" />
                 <stop offset="100%" stopColor="#14171F" />
               </linearGradient>
@@ -538,7 +538,7 @@ export function IntroScrubberSection() {
           </svg>
         </div>
 
-        <div className="relative z-10 max-w-[1440px] mx-auto pb-14 px-5 md:px-20 w-full h-full flex flex-col pt-[50px] md:pt-[60px]">
+        <div className="relative z-10 max-w-[1440px] mx-auto pb-14 px-5 md:px-10 lg:px-20 w-full h-full flex flex-col pt-[44px] md:pt-[56px] lg:pt-[60px]">
           <div className="text-center mb-4 md:mb-6">
             <ScrollRevealText
               text="Engineered with purpose"

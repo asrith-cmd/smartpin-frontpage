@@ -26,10 +26,10 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-[#161617] py-20 md:py-32">
-      <div className="max-w-[1440px] mx-auto px-5 md:px-20">
+    <section className="bg-[#161617] py-20 md:py-24 lg:py-32">
+      <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-10 md:mb-12 lg:mb-16">
           <p
             className="text-[#858589] text-xs md:text-sm tracking-[2.8px] uppercase font-medium mb-4"
             style={{ fontFamily: sfPro }}
@@ -45,11 +45,11 @@ export function TestimonialsSection() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="flex flex-col justify-between p-6 md:p-8 rounded-[20px] border border-white/[0.08]"
+              className="flex flex-col justify-between p-6 md:p-7 lg:p-8 rounded-[20px] border border-white/[0.08]"
               style={{
                 background: "rgba(255,255,255,0.03)",
                 boxShadow:
@@ -58,7 +58,7 @@ export function TestimonialsSection() {
             >
               {/* Quote */}
               <p
-                className="text-[#858589] text-base md:text-lg leading-relaxed mb-8"
+                className="text-[#858589] text-base md:text-[15px] lg:text-lg leading-relaxed mb-8"
                 style={{ fontFamily: dmSans }}
               >
                 &ldquo;{t.quote}&rdquo;

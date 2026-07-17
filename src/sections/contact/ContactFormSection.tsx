@@ -31,9 +31,11 @@ export function ContactFormSection() {
   const { activeForm, closeForm } = useContactForm();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setStatus("idle");
+    setErrorMessage(null);
     if (activeForm && sectionRef.current) {
       sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -45,17 +47,19 @@ export function ContactFormSection() {
 
   const handleSubmit = async (payload: ContactFormData) => {
     setStatus("submitting");
+    setErrorMessage(null);
     const res = await submitContactForm(payload);
     setStatus(res.success ? "success" : "error");
+    setErrorMessage(res.errorMessage ?? "Something went wrong — please try again.");
   };
 
   return (
     <section
       ref={sectionRef}
       id="contact-form"
-      className="relative bg-[#161617] border-t border-white/[0.06] py-20 md:py-28 scroll-mt-[100px]"
+      className="relative bg-[#161617] border-t border-white/[0.06] py-20 md:py-24 lg:py-28 scroll-mt-[100px]"
     >
-      <div className="max-w-[720px] mx-auto px-5 md:px-0">
+      <div className="max-w-[720px] mx-auto px-5 md:px-10 lg:px-0">
         <div className="flex items-start justify-between gap-6 mb-10">
           <div>
             <p
@@ -65,7 +69,7 @@ export function ContactFormSection() {
               {copy.eyebrow}
             </p>
             <h2
-              className="text-[#E8E8EF] text-3xl md:text-5xl font-medium leading-[1.1] mb-3"
+              className="text-[#E8E8EF] text-3xl md:text-[2.4rem] lg:text-5xl font-medium leading-[1.1] mb-3"
               style={{ fontFamily: sfPro }}
             >
               {copy.title}
@@ -99,9 +103,9 @@ export function ContactFormSection() {
             {activeForm === "demo" && <DemoForm onSubmit={handleSubmit} submitting={status === "submitting"} />}
             {activeForm === "pilot" && <PilotForm onSubmit={handleSubmit} submitting={status === "submitting"} />}
             {activeForm === "team" && <TeamForm onSubmit={handleSubmit} submitting={status === "submitting"} />}
-            {status === "error" && (
+            {status === "error" && errorMessage && (
               <p className="text-red-400 text-sm mt-4" style={{ fontFamily: dmSans }}>
-                Something went wrong — please try again.
+                {errorMessage}
               </p>
             )}
           </>

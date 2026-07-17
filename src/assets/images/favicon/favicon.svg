@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded squircle badge, matching brand blue -->
+  <rect x="16" y="16" width="480" height="480" rx="140" fill="#0448CB"/>
+
+  <!-- Pin mark: teardrop body + dot, echoing the "pin" dot in the wordmark -->
+  <g fill="#FFFFFF">
+    <!-- teardrop / location pin shape -->
+    <path d="
+      M256 96
+      C 190 96 138 148 138 214
+      C 138 300 256 416 256 416
+      C 256 416 374 300 374 214
+      C 374 148 322 96 256 96
+      Z"/>
+    <!-- inner hole to read as a pin at small sizes -->
+    <circle cx="256" cy="214" r="54" fill="#0448CB"/>
+  </g>
+</svg>

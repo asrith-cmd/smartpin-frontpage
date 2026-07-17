@@ -1,33 +1,51 @@
 import emailjs from '@emailjs/browser';
 import type { ContactFormData } from "@/types/forms";
 
-// EmailJS configuration - you'll need to replace these with your actual values
-const EMAILJS_CONFIG = {
-  SERVICE_ID: 'service_f6oh0sq', // Gmail/Outlook service ID
-  TEMPLATE_ID: 'template_skfr48d', // Email template ID
-  PUBLIC_KEY: 'quRfdU10UPqbWQgBv' // Your EmailJS public key
-};
+export async function submitContactForm(
+  submission: ContactFormData
+): Promise<{ success: boolean; errorMessage?: string }> {
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID?.trim();
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID?.trim();
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY?.trim();
 
-export async function submitContactForm(submission: ContactFormData): Promise<{ success: boolean }> {
+  if (!serviceId || !templateId || !publicKey) {
+    const errorMessage = "Email service is not configured. Add your EmailJS credentials to the environment variables.";
+    console.error("[EmailJS Config Error]", errorMessage);
+    return { success: false, errorMessage };
+  }
+
   try {
+    emailjs.init(publicKey);
+
     // Format the email data based on form type
     const emailData = formatEmailData(submission);
-    
-    // Send email via EmailJS
-    const response = await emailjs.send(
-      EMAILJS_CONFIG.SERVICE_ID,
-      EMAILJS_CONFIG.TEMPLATE_ID,
-      emailData,
-      EMAILJS_CONFIG.PUBLIC_KEY
-    );
 
-    console.info('[EmailJS Success]', response);
+    const response = await emailjs.send(serviceId, templateId, emailData, publicKey);
+
+    console.info("[EmailJS Success]", response);
     return { success: true };
-    
   } catch (error) {
-    console.error('[EmailJS Error]', error);
-    return { success: false };
+    const errorMessage = getEmailJsErrorMessage(error);
+    console.error("[EmailJS Error]", error);
+    return { success: false, errorMessage };
   }
+}
+
+function getEmailJsErrorMessage(error: unknown): string {
+  if (typeof error === "string") return error;
+  if (error instanceof Error) return error.message;
+
+  if (typeof error === "object" && error !== null) {
+    const record = error as Record<string, unknown>;
+    if (typeof record.text === "string" && record.text.trim()) return record.text;
+    if (typeof record.message === "string" && record.message.trim()) return record.message;
+    if (typeof record.status === "number") {
+      const detail = typeof record.text === "string" && record.text.trim() ? `: ${record.text}` : "";
+      return `EmailJS request failed with status ${record.status}${detail}`;
+    }
+  }
+
+  return "Unable to send your message right now.";
 }
 
 /**

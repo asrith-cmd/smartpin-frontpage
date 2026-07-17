@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Smart Pin</title>
+  <desc id="desc">Smart Pin wearable school safety device with GPS tracking and SOS alerts</desc>
+  <rect width="1200" height="630" fill="#05070B"/>
+  <rect x="70" y="70" width="1060" height="490" rx="36" fill="#0F172A" stroke="#054FD5" stroke-width="2"/>
+  <circle cx="330" cy="320" r="116" fill="#054FD5" opacity="0.95"/>
+  <rect x="498" y="202" width="320" height="20" rx="10" fill="#E8E8EF"/>
+  <rect x="498" y="250" width="260" height="16" rx="8" fill="#8DA5D8"/>
+  <rect x="498" y="290" width="300" height="16" rx="8" fill="#8DA5D8"/>
+  <rect x="498" y="338" width="214" height="16" rx="8" fill="#8DA5D8"/>
+  <rect x="498" y="386" width="274" height="16" rx="8" fill="#8DA5D8"/>
+  <text x="498" y="160" fill="#E8E8EF" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="600">Smart Pin</text>
+  <text x="498" y="452" fill="#E8E8EF" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="500">School Safety. Reinvented.</text>
+</svg>

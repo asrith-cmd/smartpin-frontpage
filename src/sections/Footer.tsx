@@ -10,9 +10,9 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="bg-[#161617] border-t border-white/[0.06]">
-      <div className="max-w-[1440px] mx-auto px-5 md:px-20 py-16 md:py-20">
+      <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 py-14 md:py-16 lg:py-20">
         {/* Main footer grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12 md:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 md:gap-12 mb-12 md:mb-16">
           {/* Brand column */}
           <div className="lg:col-span-2">
             <SmartPinLogoSmall />
@@ -66,7 +66,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-white/[0.06] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-white/[0.06] pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <p className="text-[#858589] text-sm" style={{ fontFamily: dmSans }}>
             © 2026 Smart Pin. All rights reserved.
           </p>

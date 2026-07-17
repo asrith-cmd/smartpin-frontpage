@@ -64,9 +64,11 @@ export function HowItWorksSection() {
   const leftRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeFrame, setActiveFrame] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [scale, setScale] = useState(1);
   const scaleRef = useRef(1);
   const prevTileRef = useRef(-1);
+  const activeFrameRef = useRef(0);
   // store the gsap x value directly so scrub drives it without double-smoothing
   const xRef = useRef(0);
 
@@ -105,22 +107,26 @@ export function HowItWorksSection() {
     scrub: true,
     onUpdate: (self) => {
       const rawIdx = self.progress * (TOTAL - 1);
-      // use floor+threshold so the snap feels intentional, not jumpy
-      const idx = Math.min(TOTAL - 1, Math.floor(rawIdx + 0.35));
+      const progress = Math.min(TOTAL - 1, Math.max(0, rawIdx));
+      const idx = Math.min(TOTAL - 1, Math.round(progress));
 
-      // Drive the track directly via gsap.set (scrub already smooths it)
-      const targetX = offsetForIndex(idx);
-      if (targetX !== xRef.current) {
+      const targetX = offsetForIndex(progress);
+      if (Math.abs(targetX - xRef.current) > 0.5) {
         xRef.current = targetX;
         gsap.to(trackRef.current, {
           x: targetX,
-          duration: 0.45,
+          duration: 0.18,
           ease: "power2.out",
           overwrite: true,
         });
       }
 
-      setActiveFrame(idx);
+      if (idx !== activeFrameRef.current) {
+        activeFrameRef.current = idx;
+        setActiveFrame(idx);
+      }
+
+      setScrollProgress(progress);
     },
     onInit: () => {
       const x = offsetForIndex(0);
@@ -137,7 +143,7 @@ export function HowItWorksSection() {
     gsap.fromTo(
       leftRef.current,
       { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }
     );
   }, [activeTile]);
 
@@ -156,7 +162,7 @@ export function HowItWorksSection() {
         }}
       />
 
-      <div className="relative z-10 mt-[50px] w-full flex flex-col h-full px-5 md:px-20 md:pt-[10px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
+      <div className="relative z-10 mt-[50px] w-full flex flex-col h-full px-5 md:px-10 lg:px-20 md:pt-[10px] pb-10 md:pb-14 max-w-[1440px] mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8 relative shrink-0">
@@ -185,12 +191,12 @@ export function HowItWorksSection() {
         </div>
 
         {/* Main row: left panel + carousel — stacked on mobile, side-by-side from md up */}
-        <div className="flex flex-col md:flex-row flex-1 items-center gap-6 md:gap-10 lg:gap-16 min-h-0">
+        <div className="flex flex-col md:flex-row flex-1 items-center md:items-start lg:items-center gap-6 md:gap-8 lg:gap-16 min-h-0">
 
           {/* Left: active tile only - isolated from transforms */}
-          <div ref={leftRef} className="shrink-0 w-full md:w-[280px] lg:w-[320px] relative z-20">
+          <div ref={leftRef} className="shrink-0 w-full md:w-[240px] lg:w-[320px] relative z-20">
             <h3
-              className="text-[#E8E8EF] text-xl md:text-2xl font-medium leading-[1.33] mb-3"
+              className="text-[#E8E8EF] text-xl md:text-[22px] lg:text-2xl font-medium leading-[1.33] mb-3"
               style={{ fontFamily: sfPro }}
             >
               {section.title}
@@ -212,7 +218,7 @@ export function HowItWorksSection() {
           {/* Carousel: overflow hidden, active frame always centered */}
           <div
             ref={carouselRef}
-            className="w-full md:flex-1 relative overflow-hidden flex items-center justify-center my-auto"
+            className="w-full md:flex-1 relative overflow-hidden flex items-center justify-center my-auto md:my-0"
             style={{ height: activeH }}
           >
             {/* Track — positioned so active frame center = container center */}
@@ -226,19 +232,23 @@ export function HowItWorksSection() {
               }}
             >
               {FRAMES.map((frame, i) => {
-                const isActive = i === activeFrame;
+                const distance = Math.abs(i - scrollProgress);
+                const influence = Math.max(0, 1 - distance);
+                const width = Math.round(peekW + (activeW - peekW) * influence);
+                const height = Math.round(peekH + (activeH - peekH) * influence);
+                const opacity = 0.4 + (1 - 0.4) * influence;
 
                 return (
                   <div
                     key={i}
                     className="shrink-0 rounded-[20px] overflow-hidden"
                     style={{
-                      width: isActive ? activeW : peekW,
-                      height: isActive ? activeH : peekH,
+                      width,
+                      height,
                       background: "#111",
-                      opacity: isActive ? 1 : 0.4,
-                      transition: "width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
+                      opacity,
                       flexShrink: 0,
+                      transform: "translateZ(0)",
                     }}
                   >
                     {frame.type === "video" ? (
