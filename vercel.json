@@ -23,6 +23,6 @@
   ],
   "images": {
     "sizes": [320, 640, 960, 1280, 1920],
-    "formats": ["image/webp", "image/jpeg"]
+    "formats": ["image/webp", "image/png"]
   }
 }
