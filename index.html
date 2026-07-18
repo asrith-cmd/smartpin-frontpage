@@ -14,6 +14,10 @@
       <meta name="robots" content="index, follow" />
       <meta name="theme-color" content="#05070B" />
       <link rel="canonical" href="https://www.smartpinid.com/" />
+      <!-- First frame of the pinned scrub sequence: fetched alongside the JS
+           bundle so the hero canvas has something to paint on first render
+           instead of staying blank until the preloader spins up. -->
+      <link rel="preload" as="image" href="/sequences/seq2-webp/frame_00000.webp" />
       <link rel="icon" type="image/svg+xml" href="/src/assets/images/favicon/favicon.svg" />
       <link rel="icon" type="image/png" sizes="16x16" href="/src/assets/images/favicon/favicon-16.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/src/assets/images/favicon/favicon-32.png" />

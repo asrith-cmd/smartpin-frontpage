@@ -9,9 +9,7 @@ export const FRAME_COUNT = 125;
 export const FRAME_WIDTH = 1792;
 export const FRAME_HEIGHT = 1080;
 export const frameUrl = (i: number) =>
-  i <= 55
-    ? `/sequences/seq2/Comp1_${String(i).padStart(5, "0")}.png`
-    : `/sequences/seq2/Comp 1_${String(i).padStart(5, "0")}.png`;
+  `/sequences/seq2-webp/frame_${String(i).padStart(5, "0")}.webp`;
 
 // Frame boundaries observed in the source sequence:
 // 0-40 desk/hero scene, 40-65 photo->black dissolve, 65-95 device on black
