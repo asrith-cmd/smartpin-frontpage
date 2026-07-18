@@ -264,6 +264,8 @@ export function HowItWorksSection() {
                       <img
                         src={frame.src}
                         alt=""
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-contain"
                       />
                     )}

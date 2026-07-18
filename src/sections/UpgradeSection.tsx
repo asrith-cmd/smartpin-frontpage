@@ -73,6 +73,8 @@ export function UpgradeSection() {
         <img
           src={schoolImg}
           alt="Students at school with Smart Pin"
+          loading="lazy"
+          decoding="async"
           className="h-[220px] md:h-[360px] object-contain rounded-[16px]"
           style={{ backgroundImage: `url(${schoolImg})`, backgroundSize: "cover", position: "relative", zIndex: 10 }}
         />
