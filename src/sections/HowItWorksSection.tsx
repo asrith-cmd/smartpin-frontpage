@@ -7,18 +7,16 @@ import { DecorativeWave } from "@/components/common/DecorativeWave";
 import { ScrollRevealText } from "@/components/common/ScrollRevealText";
 
 import rfidImg from "@/assets/media/how-it-works/rfid.jpeg";
-import smartparentImg from "@/assets/media/how-it-works/parent_notifications_488x550.png";
 import liveGpsImg from "@/assets/media/how-it-works/bus_tracking_488x550.png";
-import liveGps2Img from "@/assets/media/how-it-works/rfid_bus_scan_488x550.png";
+import smartPaymentImg from "@/assets/media/how-it-works/spayid.jpeg";
 import sosImg from "@/assets/media/how-it-works/sos-notification.png";
 import voiceImg from "@/assets/media/how-it-works/sos-alert.png";
 
 // 7 frames total — tile index tells which left-panel tile is active
 const FRAMES: HowItWorksFrame[] = [
   { tile: 0, type: "image", src: rfidImg },
-  { tile: 1, type: "image", src: smartparentImg },
-  { tile: 2, type: "image", src: liveGpsImg },
-  { tile: 2, type: "image", src: liveGps2Img },
+  { tile: 1, type: "image", src: liveGpsImg },
+  { tile: 2, type: "image", src: smartPaymentImg },
   { tile: 3, type: "image", src: sosImg },
   { tile: 4, type: "image", src: voiceImg },
 ];
@@ -30,15 +28,16 @@ const TILES: HowItWorksTile[] = [
     desc: "the hassle of manual attendance is replaced by our smart attendance system which scans attendance through all the classes for entire day instead of one single time attendance.",
   },
   {
-    title: "Smart parent teacher notification system",
-    label: "Instant Notifications for School Events",
-    desc: "Parents gain greater visibility into their child's daily school journey, with customizable notifications based on their preferences",
-  },
-  {
     title: "Live GPS tracking",
     label: "Always Know Where Your Child Is",
     desc: "track the students location in real time more accurate than regular bus tracker system more optimized, specifically to individual tracking and higher visibility through out the journey",
   },
+  {
+    title: "Smart Payments",
+    label: "Fast, Secure & Cashless School Payments",
+    desc: "Pay for meals instantly with a simple Smart Pin scan. Parents can monitor every transaction in real time, set spending limits, and receive instant payment notifications making school canteen purchases safer, faster, and completely cash-free.",
+  },
+
   {
     title: "SOS Emergency",
     label: "Help Is Always One Press Away",
